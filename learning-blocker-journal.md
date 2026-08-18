@@ -51,3 +51,51 @@ I configured Git to use HTTP/1.1 with `git config --global http.version HTTP/1.1
 
 **What I learned:**  
 I learned that a Git push problem does not necessarily mean that the repository or commit is wrong. I learned how to distinguish between a Git configuration/network problem and a repository problem by testing each part separately.
+
+## Webhook and FastAPI Learning Checkpoint
+
+### What I Learnt
+
+I started building the webhook and learned some basics of FastAPI and Python along the way.
+
+I learned that FastAPI is used to build APIs in Python, while Uvicorn runs the application so I can test it locally.
+
+I also learned that a POST request is used to send information to the server. Our webhook is `/webhook`, which is where the stock information is sent.
+
+I was introduced to Pydantic and `BaseModel`. I understood them as a way of defining what information our webhook should receive. I created a `StockUpdate` model with:
+
+* `product_id` as text
+* `quantity` as a whole number
+
+I then tested the webhook using the Swagger page. I sent:
+
+`{
+  "product_id": "SKU-1001",
+  "quantity": 25
+}`
+
+
+The terminal showed:
+
+`product_id='SKU-1001' quantity=25`
+
+I also got `200 OK`, which showed that the request worked.
+
+### Blocker Encountered
+
+I got an error saying:
+
+`NameError: name 'stock' is not defined`
+
+After checking the code, I realized I had accidentally put `app = FastAPI()` and `@app.post("/webhook")` on the same line. I separated them and saved the file. The server then started successfully.
+
+### My core lesson
+
+I now understand that a webhook can receive information through a POST request. I also understand the basic idea of using a Pydantic model to define the information we expect to receive.
+
+The basic flow I learned today is:
+
+`POST request after which a webhook then Pydantic checks the data and finally Python function receives the data`
+
+This was my first successful test of a webhook receiving stock information.
+
