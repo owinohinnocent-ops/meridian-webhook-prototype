@@ -10,3 +10,8 @@ app = FastAPI()
 @app.post("/webhook")
 def receive_stock_update(stock: StockUpdate):
     print(stock)
+    return {
+        "message": "Stock update received",
+        "product_id": stock.product_id,
+        "quantity": stock.quantity
+    }
