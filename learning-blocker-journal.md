@@ -7,24 +7,21 @@
 ### Unfamiliar Tool/Concept
 Webhook verification
 
-### Starting Knowledge
+### My starting Knowledge
 I am new to webhook verification. I understand that webhooks allow one system to send information/data to another system when an event occurs, but I do not yet understand how webhook requests are verified or how to implement webhook verification.
 
 ### Learning Objective
 I want to understand how webhook verification works and build a small working prototype independently.
 
-### Independent Learning Rule
+### Independent Learning Rules to follow
 During Days 1-2, I will research and experiment independently without receiving technical how-to assistance from teammates or instructors.
 
-### Initial Questions
+### Learning Questions
 1. What is a webhook?
 2. How is a webhook different from polling?
-3. What is contained in a webhook request?
-4. Why does a webhook need verification?
-5. What is a webhook signature?
-6. How does a server verify a webhook signature?
+3. How does the webhook works?
 
-### Blocker 1 - Incorrect File Extension
+### First Problem Faced - Incorrect File Extension
 
 **Problem:**  
 I initially created the learning journal as `learning-blocker-journal` without the `.md` extension.
@@ -32,25 +29,27 @@ I initially created the learning journal as `learning-blocker-journal` without t
 **How I identified it:**  
 I used the `git status` command and noticed Git listed the file as `learning-blocker-journal`. I then used the `dir` command in the VS Code terminal to inspect the actual filename.
 
-**Resolution:**  
+### How I resolved the issue  
 I renamed the file to `learning-blocker-journal.md` using the VS Code Explorer and verified the filename again using `dir`.
 
-**What I learned:**  
+### What I learnt  
 File extensions are important because they identify the type of file. The `.md` extension indicates that the file is a Markdown document.
 
-### Blocker 2 - Git Push Could Not Resolve GitHub
-
-**Problem:**  
+### Second Problem Faced - Git Push Could Not Resolve GitHub
+  
 When I tried to push my Day 1 journal to GitHub using `git push`, Git returned the error: `Could not resolve host: github.com`.
 
-**Investigation:**  
+### How I did my investigation 
+
 I first confirmed that GitHub was accessible through my web browser. I then tested the connection from the terminal using `ping github.com` and `curl.exe -I https://github.com`. The HTTPS request returned `HTTP/1.1 200 OK`, confirming that my computer could reach GitHub. I also checked the Git remote using `git remote -v` and confirmed that it pointed to the correct repository. I checked both the HTTP and HTTPS Git proxy settings and found that no proxy was configured.
 
-**Resolution:**  
+### How I solved the issue
+
 I configured Git to use HTTP/1.1 with `git config --global http.version HTTP/1.1` and retried `git push`. The push succeeded.
 
-**What I learned:**  
-I learned that a Git push problem does not necessarily mean that the repository or commit is wrong. I learned how to distinguish between a Git configuration/network problem and a repository problem by testing each part separately.
+### What I learnt
+ 
+I learnt that a Git push problem does not necessarily mean that the repository or commit is wrong. I learned how to distinguish between a Git configuration/network problem and a repository problem by testing each part separately.
 
 ## Webhook and FastAPI Learning
 
@@ -73,13 +72,11 @@ I tested the webhook using the Swagger page. I sent:
   "quantity": 25
 }
 
-The terminal showed:
-
-product_id='SKU-1001' quantity=25
+The terminal showed: product_id='SKU-1001' quantity=25
 
 I also got a 200 OK response. This showed me that the webhook had received the information successfully.
 
-### Problem Encountered
+### Problem I Encountered in the Process
 
 I made a few mistakes while setting up the webhook.
 
@@ -91,7 +88,7 @@ I had to go back and check my code to understand what I had done wrong. I also a
 
 I also initially did not understand where to type some of the commands. For example, I tried running Uvicorn before it was installed. I later installed FastAPI and Uvicorn using pip and continued with the project.
 
-### Most important lessson
+### Most important lesson
 
 The biggest thing I learned today is that I need to understand the code before building/creating a product. I am still learning , but I am beginning to understand how the different parts connect.
 
@@ -103,7 +100,7 @@ I successfully tested the webhook with real stock information today. There is st
 
 ## Day 2 - Making the Webhook Respond
 
-### What I Learned
+### What I Learnt
 
 Today I continued working on the webhook. Yesterday the webhook could receive the stock information and print it in the terminal. Today I learned how to make it send a response back.
 
@@ -113,7 +110,7 @@ I changed my function so that instead of only printing the stock update, it also
 
 I also learned how to include the information we received in the response. Instead of only returning "Stock update received", I changed the response so that it also showed the product ID and quantity. This made it clearer what information the webhook had received.
 
-### Problem Encountered
+### Problem I Encountered
 
 I wanted to understand what would happen if the wrong type of information was sent to the webhook. I changed the quantity from a number to `"twenty five"` and tested it.
 
