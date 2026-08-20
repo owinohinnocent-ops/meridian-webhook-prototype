@@ -2,7 +2,7 @@
 
 ## Day 1 - Independent Learning
 
-**Date:** 18 August 2026
+Date: 18/08/2026
 
 ### Unfamiliar Tool/Concept
 Webhook verification
