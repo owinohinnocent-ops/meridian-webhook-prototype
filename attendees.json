@@ -1,0 +1,14 @@
+{
+  "QR-001": {
+    "name": "Innocent Odhiambo",
+    "status": "CHECKED_IN"
+  },
+  "QR-002": {
+    "name": "Janet Ngugi",
+    "status": "CHECKED_IN"
+  },
+  "QR-003": {
+    "name": "Stephen Letoo",
+    "status": "CHECKED_IN"
+  }
+}
