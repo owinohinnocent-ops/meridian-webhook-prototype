@@ -2,10 +2,15 @@ import json
 from pathlib import Path
 
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 STATE_FILE = Path(__file__).parent / "attendees.json"
 
 app = FastAPI()
+
+class StockUpdate(BaseModel):
+    product_id: str
+    quantity: int
 
 def load_attendees():
     with open(STATE_FILE, "r", encoding="utf-8") as file:
@@ -14,6 +19,16 @@ def load_attendees():
 def save_attendees(attendees):
     with open(STATE_FILE, "w", encoding="utf-8") as file:
         json.dump(attendees, file, indent=2)
+
+@app.post("/webhook")
+def receive_stock_update(stock: StockUpdate):
+    print(stock)
+
+    return {
+        "message": "Stock update received",
+        "product_id": stock.product_id,
+        "quantity": stock.quantity,
+    }
 
 @app.post("/webhook/print-complete")
 def print_complete(data: dict):
