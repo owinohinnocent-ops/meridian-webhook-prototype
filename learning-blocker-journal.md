@@ -1,4 +1,4 @@
-# Learning and Blocker Journal
+# Meridian Day 1-3 Learning and Blocker Journal
 
 ## Day 1 - Independent Learning
 
@@ -19,14 +19,13 @@ During Days 1-2, I will research and experiment independently without receiving 
 ### Learning Questions
 1. What is a webhook?
 2. How is a webhook different from polling?
-3. How does the webhook works?
+3. How does the webhook work?
 
 ### First Problem Faced - Incorrect File Extension
-
-**Problem:**  
+  
 I initially created the learning journal as `learning-blocker-journal` without the `.md` extension.
 
-**How I identified it:**  
+### How I identified the problem:  
 I used the `git status` command and noticed Git listed the file as `learning-blocker-journal`. I then used the `dir` command in the VS Code terminal to inspect the actual filename.
 
 ### How I resolved the issue  
@@ -100,6 +99,8 @@ I successfully tested the webhook with real stock information today. There is st
 
 ## Day 2 - Making the Webhook Respond
 
+Date: 19/08/2026
+
 ### What I Learnt
 
 Today I continued working on the webhook. Yesterday the webhook could receive the stock information and print it in the terminal. Today I learned how to make it send a response back.
@@ -120,7 +121,7 @@ This time I got an error saying that the input should be a valid integer. This h
 
 After that, I changed the quantity back to `25` and the webhook worked again.
 
-### Key Learning
+### My Crucial Learning point
 
 Today I understood better how the webhook works after receiving the information. I learned that the function can return a response to the system that sent the request.
 
@@ -131,6 +132,8 @@ I also understood better why we use Pydantic. It checks that the information bei
 I am still learning and I don't understand everything yet, but I can now follow what happens when a stock update is sent to the webhook and how the application responds to it.
 
 ## Day 3 - Building the Original Stock System
+
+Date: 20/08/2026
 
 ### What I Was Asked to Build
 
