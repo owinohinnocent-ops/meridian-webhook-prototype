@@ -265,3 +265,218 @@ My final `git status` showed:
 `nothing to commit, working tree clean`
 
 This gave me a clean checkpoint before moving to the next stage of the project.
+
+## Day 4 - The Pivot and Asynchronous Processing
+
+Date: 21/08/2026
+
+### What Changed
+
+Today the project changed direction. The original stock system I built on Day 3 used polling, where the system repeatedly checked the warehouse for updates.
+
+The new requirement was to move away from that approach and use an event-driven workflow. For my implementation, I worked with RabbitMQ, a printer process and a FastAPI webhook.
+
+The change was challenging because RabbitMQ and asynchronous processing were still new to me. I understood the general idea, but I had to learn how the different processes communicate and how a message moves through the system.
+
+## What I Built
+
+I created a badge-printing workflow using:
+
+- `checkin.py`
+- `printer.py`
+- `webhook.py`
+- `rabbit_test.py`
+- `attendees.json`
+
+The new flow was:
+
+Attendee Scan to PENDING to RabbitMQ to Printer to Webhook then finally to CHECKED_IN
+
+When an attendee is scanned, their status changes to `PENDING`. A print request is then sent to RabbitMQ. The printer acts as a consumer and receives the request. After the simulated printing is completed, the printer sends a request to the FastAPI webhook. The webhook then changes the attendee status to `CHECKED_IN`.
+
+## Problems I faced
+
+### Blocker 1 - RabbitMQ and Erlang Setup
+
+One of the first difficulties I faced was getting RabbitMQ to work correctly. I initially received an `ERLANG_HOME not set correctly` error.
+
+I also encountered an Erlang cookie/authentication issue. This was confusing because I had already installed RabbitMQ Server and Erlang.
+
+I had to stop and investigate the installation and configuration before continuing.
+
+Eventually RabbitMQ was working, and I was able to verify it using the RabbitMQ command-line tools.
+
+### Blocker 2 - Understanding the Printer Process
+
+When I ran `python printer.py`, the terminal only displayed:
+
+`Printer is waiting for print requests...`
+
+At first I thought the program was stuck. I later understood that this was actually the expected behaviour because the printer was a consumer waiting for a message from RabbitMQ.
+
+When a print request was sent, the printer displayed: `Printer received: Print badge for QR-003`
+
+This helped me understand the producer and consumer concept much better.
+
+### Blocker 3 - Webhook Connection Error
+
+When I first connected the printer to the FastAPI webhook, I received:
+
+`WinError 10061`
+
+The connection to `127.0.0.1:8000` was refused.
+
+I initially thought there was something wrong with the code. I later realized that the FastAPI server was not running.
+
+I started it using: `python -m uvicorn webhook:app --reload`
+
+Once Uvicorn was running, the printer was able to communicate with the webhook and I received:
+`Webhook response: 200`
+
+### Blocker 4 - Sharing State Between Processes
+
+Another problem was understanding how the attendee status would be updated.
+
+Initially, the attendee information was stored in a Python dictionary inside `checkin.py`. I expected the webhook to be able to update the same dictionary after the badge was printed.
+
+I eventually understood that `checkin.py` and the FastAPI webhook were running as separate Python processes. They therefore did not automatically share the same Python variables.
+
+I changed the implementation to use `attendees.json` as persistent shared state.
+
+This allowed the status to move through:
+
+`NOT_CHECKED_IN to PENDING to CHECKED_IN`
+
+### Testing
+
+I tested the system using the attendee QR codes.
+
+For the final end-to-end test, I added a temporary test attendee with QR code `QR-004`.
+
+The first command returned:
+
+`{'success': True, 'message': 'Badge printing is pending', 'name': 'Test Attendee', 'status': 'PENDING'}`
+
+The printer then received: `Printer received: Print badge for QR-004`
+
+The printer successfully called the webhook and received: `Webhook response: 200`
+
+I then checked `attendees.json` and confirmed that QR-004 had changed to: `CHECKED_IN`
+
+This confirmed that the complete asynchronous workflow was working.
+
+I removed the temporary QR-004 test data afterwards so that the final project data remained clean.
+
+## What I Learnt
+
+The biggest lesson from Day 4 was that changing an architecture is more difficult than simply changing a few lines of code.
+
+I learnt how RabbitMQ can act as a message broker between different processes. I also learnt the difference between a producer and a consumer.
+
+I now understand the basic roles of the components I used:
+
+- RabbitMQ - message broker
+- Pika - Python library used to communicate with RabbitMQ
+- `checkin.py` - sends the print request
+- `printer.py` - consumes the print request
+- FastAPI - receives the webhook notification
+- Uvicorn - runs the FastAPI application
+- Requests - allows the printer to call the webhook
+- `attendees.json` - stores the attendee status
+
+I also learned an important debugging lesson. When several components are involved, I should not assume that the whole system is broken. I can test each part separately: the RabbitMQ server, queue, producer, consumer, webhook and persistent state.
+
+## My take on Day 4
+
+Honestly, Day 4 was one of the most challenging parts of the simulation for me because most of the tools and concepts were still new to me.
+
+There were moments when I did not know what was wrong and I had to slow down and investigate one problem at a time. I also made mistakes while working between different PowerShell terminals.
+
+However, I did not stop when I encountered the errors. I kept testing individual components until I could see the complete flow working.
+
+Seeing the printer receive the message, the webhook return `200`, and the attendee finally change to `CHECKED_IN` gave me confidence that I was beginning to understand asynchronous communication rather than just copying code.
+
+## Day 5 - Refactor and Review
+
+Date: 22/08/2026
+
+### What I Did
+
+Today I reviewed the implementation after the pivot and prepared the project for final submission.
+
+According to the instructions provided by PLP, the main Day 5 requirement was to ship the new approach, document what changed, and deal with the parts of the original implementation that no longer fit the new direction.
+
+I reviewed the original polling implementation from Day 3 and identified these files as obsolete for the final architecture:
+
+- `cache.py`
+- `poller.py`
+- `stock_api.py`
+- `warehouse.py`
+
+Instead of permanently destroying the previous work, I moved these files into a `legacy_polling` folder.
+
+This means the old implementation is no longer part of the active implementation, but it is still available as evidence of what I built before the pivot.
+
+## The Scope Change
+
+The original implementation was:
+
+Warehouse to Poller to Cache to Stock API
+
+The pivoted implementation became:
+
+Attendee Scan to PENDING to RabbitMQ to Printer to Webhook to CHECKED_IN
+
+The main change was therefore from a polling-based approach to an event-driven/message-based approach.
+
+The old polling files were no longer needed by the active implementation, so I deprecated them by moving them into `legacy_polling`.
+
+## What Stayed Working
+
+The Day 4 asynchronous workflow continued to work after the Day 5 cleanup.
+
+I verified that RabbitMQ was running and that the FastAPI application could start successfully.
+
+I also ran the printer process and performed another end-to-end test.
+
+For the test attendee QR-004, the system successfully moved through:
+
+`NOT_CHECKED_IN → PENDING → CHECKED_IN`
+
+The printer received the RabbitMQ message and the webhook returned HTTP `200`.
+
+This gave me confidence that the pivoted implementation was still functional after the refactor.
+
+## What I Found Difficult
+
+The hardest part of Day 5 was understanding what should be removed and what should be preserved.
+
+At first, seeing Git report the original polling files as deleted made me concerned that I had lost my Day 3 work.
+
+I checked the project and confirmed that the old files had been preserved inside `legacy_polling`.
+
+This helped me understand the difference between deleting something permanently and deprecating or archiving an old implementation.
+
+I also learned that Git status is useful during a refactor because it shows exactly what has been modified, deleted and added before anything is committed.
+
+## What I Learnt
+
+Day 5 taught me that refactoring is not only about making code shorter or cleaner. It is also about deciding what still belongs to the current requirements and what no longer fits.
+
+I also learnt that previous work can still be valuable even when the requirements change. The Day 3 polling implementation helped me understand the original architecture and gave me a clear basis for understanding what the pivot changed.
+
+Most importantly, I learned that I can remain productive even when I am working with tools that are unfamiliar to me. I still have a lot to learn, but I am becoming more comfortable with investigating problems instead of immediately assuming that I cannot solve them.
+
+## My final take
+
+Looking back at the five days, the biggest change for me was not just the code. It was my approach to learning.
+
+At the beginning, I was very dependent on understanding every technical detail before feeling confident. The simulation forced me to work with unfamiliar concepts, make mistakes, investigate errors and continue moving.
+
+I struggled several times, especially when working with RabbitMQ, asynchronous processing and multiple processes. However, I kept testing and fixing one issue at a time.
+
+The pivot also showed me that software development is not always about finishing the first solution. Requirements can change, and part of engineering is being able to understand the change, identify what no longer fits, preserve useful work, and move forward.
+
+I would not say that I now fully understand all the technologies I used. I am still if not a beginner then intermediate in many of them. However, I am more confident that when I encounter an unfamiliar tool or an error, I can investigate it, learn from it and eventually make progress.
+
+That is probably the most important thing I am taking away from the Meridian Pivot simulation.
