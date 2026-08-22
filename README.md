@@ -2,6 +2,8 @@
 
 ## Meridian Pivot Simulation
 
+Client: Solstice Events Co.
+
 This repository contains my individual work throughout the Meridian Pivot simulation, from Day 1 through Day 5.
 
 ## Day 1-2: Independent Learning
@@ -78,7 +80,11 @@ The complete learning and blocker journal is maintained in:
 
 `learning-blocker-journal.md`
 
-The journal documents my learning process, blockers, investigations, solutions, testing and reflections from Day 1 through Day 5.
+The Day 5 Scope Delta Analysis is maintained in:
+
+`scope-delta-analysis.md`
+
+It documents the original scope, the client pivot, the dropped, modified and added components, architectural trade-offs, regression checks and the final result.
 
 ## Repository Structure
 
